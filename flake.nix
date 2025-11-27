@@ -4,6 +4,10 @@
   inputs = {
     flake-parts.url = "github:hercules-ci/flake-parts";
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
+    preCommitHooksNix = {
+      url = "github:cachix/git-hooks.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -15,7 +19,10 @@
         "aarch64-darwin"
       ];
 
-      imports = [ ];
+      imports = [
+        inputs.preCommitHooksNix.flakeModule
+        ./checks
+      ];
 
       perSystem =
         {
@@ -32,7 +39,11 @@
           formatter = pkgs.nixfmt-rfc-style;
 
           devShells.default = pkgs.mkShell {
-            packages = [ pkgs.nixfmt-rfc-style ];
+            packages = [
+              pkgs.nixfmt-rfc-style
+            ]
+            ++ config.pre-commit.settings.enabledPackages;
+            shellHook = config.pre-commit.installationScript;
           };
         };
     };
