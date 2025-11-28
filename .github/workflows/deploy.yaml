@@ -1,0 +1,34 @@
+name: "Deploy Pages"
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: cachix/install-nix-action@v31
+        with:
+          extra_nix_config: |
+            extra-trusted-public-keys = ctrl-os:baPzGxj33zp/P+GAIJXsr8ss9Law+qEEFViX1+flbv8=
+            extra-substituters = https://cache.ctrl-os.com/
+      - name: Build the manuals
+        id: buildManual
+        run: nix -L build .#manualWebsite
+      - name: Upload artifacts
+        id: deployment
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: result/
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
