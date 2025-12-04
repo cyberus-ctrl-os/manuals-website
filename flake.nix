@@ -110,14 +110,14 @@
                       Home = "index.md";
                     }
                     {
-                      "CTRL-OS Nixpkgs Manuals" = [
-                        { "" = "manual.md"; }
+                      "Nixpkgs Manuals" = [
+                        { "" = "nixpkgs-manuals.md"; }
                         { "CTRL-OS ${release-24-05}" = "${release-dir-24-05}/nixpkgs/manual.html"; }
                       ];
                     }
                     {
-                      "CTRL-OS Manuals" = [
-                        { "" = "ctrl-os-manual.md"; }
+                      "NixOS Manuals" = [
+                        { "" = "nixos-manuals.md"; }
                         { "CTRL-OS ${release-24-05} Manual" = "${release-dir-24-05}/nixos/index.html"; }
                         { "CTRL-OS ${release-24-05} Options" = "${release-dir-24-05}/nixos/options.html"; }
                       ];
