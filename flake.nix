@@ -49,6 +49,7 @@
                   site_url = "https://manuals.ctrl-os.com";
                   theme = {
                     name = "material";
+                    custom_dir = "docs/overrides";
                     logo = "assets/logo-white.svg";
                     favicon = "assets/favicon.ico";
                     palette = [
@@ -84,23 +85,26 @@
                       "toc.integrate "
                     ];
                   };
-                  extra.social = [
-                    {
-                      icon = "material/web";
-                      link = "https://cyberus-technology.de";
-                      name = "Cyberus Technology";
-                    }
-                    {
-                      icon = "fontawesome/brands/github";
-                      link = "https://github.com/cyberus-technology/CTRL-OS";
-                      name = "GitHub";
-                    }
-                    {
-                      icon = "simple/matrix";
-                      link = "https://matrix.to/#/#ctrl-os:cyberus-technology.de";
-                      name = "Matrix Chat";
-                    }
-                  ];
+                  extra = {
+                    analytics.provider = "custom";
+                    social = [
+                      {
+                        icon = "material/web";
+                        link = "https://cyberus-technology.de";
+                        name = "Cyberus Technology";
+                      }
+                      {
+                        icon = "fontawesome/brands/github";
+                        link = "https://github.com/cyberus-technology/CTRL-OS";
+                        name = "GitHub";
+                      }
+                      {
+                        icon = "simple/matrix";
+                        link = "https://matrix.to/#/#ctrl-os:cyberus-technology.de";
+                        name = "Matrix Chat";
+                      }
+                    ];
+                  };
                   extra_css = [
                     "stylesheets/custom.css"
                   ];
@@ -133,6 +137,7 @@
                     mkdocs
                     mkdocs-material
                     mkdocs-material-extensions
+                    pkgs.gnused
                   ];
                 }
                 ''
@@ -149,6 +154,15 @@
                   cp -vR --no-preserve=mode,ownership ${inputs.ctrl-os24-05.htmlDocs.nixosManual}/share/doc/nixos/*.html $MANUAL_PATH/nixos/
                   cp -vR --no-preserve=mode,ownership ${inputs.ctrl-os24-05.htmlDocs.nixosManual}/share/doc/nixos/*.js $MANUAL_PATH/nixos/
                   cp -vR --no-preserve=mode,ownership ${inputs.ctrl-os24-05.htmlDocs.nixosManual}/share/doc/nixos/*.css $MANUAL_PATH/nixos/
+
+                  # Adding the tracking to the static websites
+                  pushd $MANUAL_PATH
+                  for html in **/*.html
+                    do
+                      sed -i '/<\/head>/e cat ${./docs/overrides/partials/integrations/analytics/custom.html}' "$html"
+                      echo "Added analytics code to $html"
+                    done
+                  popd
 
                   mkdocs build -f ./mkdocs.yml -s -d "$out"
                 '';
